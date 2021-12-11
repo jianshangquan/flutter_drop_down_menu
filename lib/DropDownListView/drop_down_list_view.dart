@@ -9,14 +9,17 @@ import 'package:collection/collection.dart';
 typedef MenuItemBuilder = Widget Function(String data, int index);
 typedef OnValueChanged = dynamic Function(String data, int index);
 typedef OnWidgetTransition = Widget? Function(double animationValue);
-typedef DropdownButtonWidgetBuilder = Widget Function(BuildContext context, String selectedValue);
-typedef DropdownItemWidgetBuilder = Widget Function(BuildContext context, String value);
+typedef DropdownButtonWidgetBuilder = Widget Function(
+    BuildContext context, String selectedValue);
+typedef DropdownItemWidgetBuilder = Widget Function(
+    BuildContext context, String value);
 
 class DropDownListView extends StatefulWidget {
   DropDownListView({
     Key? key,
     this.menuItemBuilder,
     this.height = 300,
+    this.itemHeight = 30,
     this.gaps = 10,
     required this.onValueChanged,
     required this.items,
@@ -34,8 +37,8 @@ class DropDownListView extends StatefulWidget {
     required this.dropdownItemBuilder,
   }) : super(key: key);
 
-
   double height;
+  double itemHeight;
   double gaps;
   double elevation;
   MenuItemBuilder? menuItemBuilder;
@@ -59,7 +62,8 @@ class DropDownListView extends StatefulWidget {
   _DropDownListViewState createState() => _DropDownListViewState();
 }
 
-class _DropDownListViewState extends State<DropDownListView> with SingleTickerProviderStateMixin {
+class _DropDownListViewState extends State<DropDownListView>
+    with SingleTickerProviderStateMixin {
   final GlobalKey _mainWidgetKey = GlobalKey();
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -74,10 +78,14 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    assert(widget.items.length > widget.defaultItemIndex, "Default Item Index must not larger then total items");
-    _valueNotifier = ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: widget.duration));
-    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationController, curve: widget.curve));
+    assert(widget.items.length > widget.defaultItemIndex,
+        "Default Item Index must not larger then total items");
+    _valueNotifier =
+        ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
+    _animationController = AnimationController(
+        vsync: this, duration: Duration(milliseconds: widget.duration));
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _animationController, curve: widget.curve));
   }
 
   @override
@@ -110,29 +118,44 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
     Size size = MediaQuery.of(context).size;
     double floatingTop = 0;
     double floatingLeft = 0;
-    switch(widget.position){
-      case DropdownPosition.bottom: {
-        floatingTop = _height + widget.gaps;
-      } break;
-      case DropdownPosition.top: {
-        floatingTop = -widget.height - widget.gaps;
-      } break;
-      case DropdownPosition.rightTop: {
-        floatingTop = -widget.height - widget.gaps + _height;
-        floatingLeft = _width;
-      } break;
-      case DropdownPosition.rightBottom:{
-        floatingTop = 0;
-        floatingLeft = _width + widget.gaps;
-      } break;
-      case DropdownPosition.leftTop:{
-        floatingTop = -widget.height - widget.gaps + _height;
-        floatingLeft = -_width - widget.gaps;
-      } break;
-      case DropdownPosition.leftBottom:{
-        floatingTop = 0;
-        floatingLeft = -_width - widget.gaps;
-      } break;
+    switch (widget.position) {
+      case DropdownPosition.bottom:
+        {
+          floatingTop = _height + widget.gaps;
+        }
+        break;
+      case DropdownPosition.top:
+        {
+          floatingTop = -widget.height - widget.gaps;
+        }
+        break;
+      case DropdownPosition.rightTop:
+        {
+          floatingTop = -widget.height - widget.gaps + _height;
+          floatingLeft = _width;
+        }
+        break;
+      case DropdownPosition.rightBottom:
+        {
+          floatingTop = 0;
+          floatingLeft = _width + widget.gaps;
+        }
+        break;
+      case DropdownPosition.leftTop:
+        {
+          floatingTop = -widget.height - widget.gaps + _height;
+          floatingLeft = -_width - widget.gaps;
+        }
+        break;
+      case DropdownPosition.leftBottom:
+        {
+          floatingTop = 0;
+          floatingLeft = -_width - widget.gaps;
+        }
+        break;
+      case DropdownPosition.automatic:
+        // TODO: Handle this case.
+        break;
     }
     return OverlayEntry(
       builder: (context) {
@@ -152,7 +175,13 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
               child: CompositedTransformFollower(
                 link: _layerLink,
                 showWhenUnlinked: false,
-                offset: Offset(floatingLeft, (widget.position == DropdownPosition.top || widget.position == DropdownPosition.rightTop || widget.position == DropdownPosition.leftTop) ? floatingTop * _animation.value : floatingTop),
+                offset: Offset(
+                    floatingLeft,
+                    (widget.position == DropdownPosition.top ||
+                            widget.position == DropdownPosition.rightTop ||
+                            widget.position == DropdownPosition.leftTop)
+                        ? floatingTop * _animation.value
+                        : floatingTop),
                 child: Opacity(
                   opacity: _animation.value,
                   child: Container(
@@ -160,28 +189,41 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
                     height: widget.height * _animation.value,
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20 * _animation.value),
+                      borderRadius:
+                          BorderRadius.circular(10 * _animation.value),
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2 * _animation.value),
+                          color:
+                              Colors.black.withOpacity(0.2 * _animation.value),
                           blurRadius: widget.elevation * _animation.value,
                           spreadRadius: 0.0,
-                          offset: const Offset(2, 2), // shadow direction: bottom right
+                          offset: const Offset(
+                              2, 2), // shadow direction: bottom right
                         )
                       ],
                     ),
                     child: ScrollConfiguration(
                       behavior: MyBehavior(),
                       child: SingleChildScrollView(
-                        physics: widget.physics ?? const ClampingScrollPhysics(),
+                        physics:
+                            widget.physics ?? const ClampingScrollPhysics(),
                         child: Material(
                           color: Colors.transparent,
                           child: Column(
                             children: widget.items.mapIndexed((index, item) {
                               return DropDownItem(
                                 value: item,
-                                builder: widget.dropdownItemBuilder,
+                                builder: (context, label) {
+                                  return SizedBox(
+                                    width: double.infinity,
+                                    height: widget.itemHeight,
+                                    child: widget.dropdownItemBuilder(
+                                      context,
+                                      label,
+                                    ),
+                                  );
+                                },
                                 onPressed: () => _onPress(item, index),
                               );
                             }).toList(),
@@ -200,7 +242,8 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
   }
 
   _findDropDownPosition() {
-    RenderBox renderBox = _mainWidgetKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox =
+        _mainWidgetKey.currentContext!.findRenderObject() as RenderBox;
     _height = renderBox.size.height;
     _width = renderBox.size.width;
     Offset offset = renderBox.localToGlobal(Offset.zero);
@@ -220,11 +263,12 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
       Overlay.of(context)?.insert(_floatingDropDownOverlayEntry!);
       _animationController.addListener(() {
         overlayState.setState(() {});
-        if(widget.onWidgetTransition != null) widget.onWidgetTransition!(_animationController.value);
+        if (widget.onWidgetTransition != null)
+          widget.onWidgetTransition!(_animationController.value);
       });
       await _animationController.forward();
       _isExpanded = true;
-      if(widget.onMenuOpen != null) widget.onMenuOpen!();
+      if (widget.onMenuOpen != null) widget.onMenuOpen!();
     }
   }
 
@@ -233,7 +277,7 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
       await _animationController.reverse();
       _floatingDropDownOverlayEntry!.remove();
       _isExpanded = false;
-      if(widget.onMenuClose != null) widget.onMenuClose!();
+      if (widget.onMenuClose != null) widget.onMenuClose!();
     }
   }
 
@@ -249,10 +293,10 @@ class _DropDownListViewState extends State<DropDownListView> with SingleTickerPr
     super.dispose();
     _valueNotifier.dispose();
     _animationController.dispose();
-    _floatingDropDownOverlayEntry?.dispose();
+    if (_floatingDropDownOverlayEntry != null)
+      _floatingDropDownOverlayEntry!.dispose();
   }
 }
-
 
 class MyBehavior extends ScrollBehavior {
   @override
