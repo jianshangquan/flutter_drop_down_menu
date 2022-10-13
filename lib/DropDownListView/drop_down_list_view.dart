@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:menu_items/DropDownListView/drop_down_overlay.dart';
 
 import 'drop_down_list_item.dart';
 import 'drop_down_list_position.dart';
@@ -9,10 +10,9 @@ import 'package:collection/collection.dart';
 typedef MenuItemBuilder = Widget Function(String data, int index);
 typedef OnValueChanged = dynamic Function(String data, int index);
 typedef OnWidgetTransition = Widget? Function(double animationValue);
-typedef DropdownButtonWidgetBuilder = Widget Function(
-    BuildContext context, String selectedValue);
-typedef DropdownItemWidgetBuilder = Widget Function(
-    BuildContext context, String value);
+typedef DropdownButtonWidgetBuilder = Widget Function(BuildContext context, String selectedValue);
+typedef DropdownItemWidgetBuilder = Widget Function(BuildContext context, String value);
+
 
 class DropDownListView extends StatefulWidget {
   DropDownListView({
@@ -65,8 +65,8 @@ class DropDownListView extends StatefulWidget {
 class _DropDownListViewState extends State<DropDownListView>
     with SingleTickerProviderStateMixin {
   final GlobalKey _mainWidgetKey = GlobalKey();
-  late final AnimationController _animationController;
-  late final Animation<double> _animation;
+  // late final AnimationController _animationController;
+  // late final Animation<double> _animation;
   late final ValueNotifier<String> _valueNotifier;
   final LayerLink _layerLink = LayerLink();
 
@@ -82,10 +82,10 @@ class _DropDownListViewState extends State<DropDownListView>
         "Default Item Index must not larger then total items");
     _valueNotifier =
         ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: widget.duration));
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: _animationController, curve: widget.curve));
+    // _animationController = AnimationController(
+    //     vsync: this, duration: Duration(milliseconds: widget.duration));
+    // _animation = Tween<double>(begin: 0, end: 1).animate(
+    //     CurvedAnimation(parent: _animationController, curve: widget.curve));
   }
 
   @override
@@ -159,83 +159,24 @@ class _DropDownListViewState extends State<DropDownListView>
     }
     return OverlayEntry(
       builder: (context) {
-        return Stack(
-          children: [
-            SizedBox(
-              width: size.width,
-              height: size.height,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: _closeMenu,
-              ),
-            ),
-            Positioned(
-              left: _x,
-              top: _y + _height + _height + widget.gaps,
-              child: CompositedTransformFollower(
-                link: _layerLink,
-                showWhenUnlinked: false,
-                offset: Offset(
-                    floatingLeft,
-                    (widget.position == DropdownPosition.top ||
-                            widget.position == DropdownPosition.rightTop ||
-                            widget.position == DropdownPosition.leftTop)
-                        ? floatingTop * _animation.value
-                        : floatingTop),
-                child: Opacity(
-                  opacity: _animation.value,
-                  child: Container(
-                    width: _width,
-                    height: widget.height * _animation.value,
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(10 * _animation.value),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              Colors.black.withOpacity(0.2 * _animation.value),
-                          blurRadius: widget.elevation * _animation.value,
-                          spreadRadius: 0.0,
-                          offset: const Offset(
-                              2, 2), // shadow direction: bottom right
-                        )
-                      ],
-                    ),
-                    child: ScrollConfiguration(
-                      behavior: MyBehavior(),
-                      child: SingleChildScrollView(
-                        physics:
-                            widget.physics ?? const ClampingScrollPhysics(),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Column(
-                            children: widget.items.mapIndexed((index, item) {
-                              return DropDownItem(
-                                value: item,
-                                builder: (context, label) {
-                                  return SizedBox(
-                                    width: double.infinity,
-                                    height: widget.itemHeight,
-                                    child: widget.dropdownItemBuilder(
-                                      context,
-                                      label,
-                                    ),
-                                  );
-                                },
-                                onPressed: () => _onPress(item, index),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        return DropDownOverlay(
+          x: _x,
+          y: _y,
+          floatingLeft: floatingLeft,
+          floatingTop: floatingTop,
+          width: _width,
+          height: _height,
+          containerHeight: widget.height,
+          size: size,
+          layerLink: _layerLink,
+          position: widget.position,
+          physics: widget.physics ?? const ClampingScrollPhysics(),
+          elevation: widget.elevation,
+          gaps: widget.gaps,
+          dropdownItemBuilder: widget.dropdownItemBuilder,
+          items: widget.items,
+          onClose: _closeMenu,
+          onValueChanged: _onPress,
         );
       },
     );
@@ -249,6 +190,7 @@ class _DropDownListViewState extends State<DropDownListView>
     Offset offset = renderBox.localToGlobal(Offset.zero);
     _x = offset.dx;
     _y = offset.dy;
+    debugPrint("x: $_x, y: $_y, height: $_height, width: $_width");
   }
 
   _openMenu() async {
@@ -261,24 +203,25 @@ class _DropDownListViewState extends State<DropDownListView>
       _findDropDownPosition();
       _floatingDropDownOverlayEntry = _createFloatingDropDown();
       Overlay.of(context)?.insert(_floatingDropDownOverlayEntry!);
-      _animationController.addListener(() {
-        overlayState.setState(() {});
-        if (widget.onWidgetTransition != null)
-          widget.onWidgetTransition!(_animationController.value);
-      });
-      await _animationController.forward();
-      _isExpanded = true;
-      if (widget.onMenuOpen != null) widget.onMenuOpen!();
+      // _animationController.addListener(() {
+      //   overlayState.setState(() {});
+      //   if (widget.onWidgetTransition != null)
+      //     widget.onWidgetTransition!(_animationController.value);
+      // });
+      // await _animationController.forward();
+      // _isExpanded = true;
+      // if (widget.onMenuOpen != null) widget.onMenuOpen!();
     }
   }
 
   _closeMenu() async {
-    if (_isExpanded) {
-      await _animationController.reverse();
+    // if (_isExpanded) {
+      // await _animationController.reverse();
       _floatingDropDownOverlayEntry!.remove();
-      _isExpanded = false;
-      if (widget.onMenuClose != null) widget.onMenuClose!();
-    }
+      debugPrint('removed');
+      // _isExpanded = false;
+      // if (widget.onMenuClose != null) widget.onMenuClose!();
+    // }
   }
 
   _onPress(String value, int index) {
@@ -292,7 +235,7 @@ class _DropDownListViewState extends State<DropDownListView>
     // await _closeMenu();
     super.dispose();
     _valueNotifier.dispose();
-    _animationController.dispose();
+    // _animationController.dispose();
     if (_floatingDropDownOverlayEntry != null)
       _floatingDropDownOverlayEntry!.dispose();
   }
