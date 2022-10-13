@@ -91,13 +91,16 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SizedBox(
-          width: widget.size.width,
-          height: widget.size.height,
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: onClose,
-          ),
+        Container(
+          color: Colors.transparent,
+          child: SizedBox(
+            width: widget.size.width,
+            height: widget.size.height,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: onClose,
+            ),
+          )
         ),
         Positioned(
           left: widget.x,
