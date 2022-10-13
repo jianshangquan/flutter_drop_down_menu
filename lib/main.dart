@@ -25,7 +25,7 @@ class _HomeViewState extends State<HomeView> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              height: 1000,
+              height: 2000,
               alignment: Alignment.center,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -36,18 +36,18 @@ class _HomeViewState extends State<HomeView> {
                     height: 200,
                     defaultItemIndex: 4,
                     position: DropdownPosition.top,
-                    items: const ["value1", 'value2', 'value3', 'value4', 'value5', 'value6', 'value7'],
+                    items: const ["value1", 'value2', 'value3', 'value4', 'value5', 'value6', 'value7value7value7value7value7value7value7value7value7value7value7'],
                     dropdownItemBuilder: (context, String value){
                       return Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                          child: Text(value)
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                          child: Text(value, overflow: TextOverflow.ellipsis,)
                       );
                     },
                     dropdownButtonBuilder: (context, String value){
                       return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          child: Text('$value')
+                          child: Text('$value', overflow: TextOverflow.ellipsis)
                       );
                     },
                     onValueChanged: (value, index){

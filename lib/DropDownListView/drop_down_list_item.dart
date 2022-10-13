@@ -9,23 +9,39 @@ class DropDownItem extends StatefulWidget {
   String value;
   VoidCallback? onPressed;
   DropdownItemWidgetBuilder builder;
+  int index;
 
-  DropDownItem({Key? key, required this.value, required this.onPressed, required this.builder}) : super(key: key);
+  DropDownItem({Key? key, required this.value, required this.onPressed, required this.builder, required this.index}) : super(key: key);
 
   @override
   State<DropDownItem> createState() => _DropDownItemState();
 }
 
-class _DropDownItemState extends State<DropDownItem> {
+class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMixin {
 
   final GlobalKey key = GlobalKey();
-  final double height = Random().nextDouble() * 100;
+  final double height = Random().nextDouble() * 20;
+  // late final AnimationController _controller = AnimationController(
+  //   duration: const Duration(milliseconds: 150),
+  //   vsync: this,
+  // );
+  // late final Animation<double> _animation = CurvedAnimation(
+  //   parent: _controller,
+  //   curve: Curves.easeIn,
+  // );
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => getSizeAndPosition());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getSizeAndPosition();
+      // Future.delayed(Duration(milliseconds: 100 * widget.index), () {
+      //   _controller.forward();
+      // });
+    });
   }
+
+
 
   getSizeAndPosition() {
     RenderBox? item = key.currentContext?.findRenderObject() as RenderBox?;
@@ -38,10 +54,16 @@ class _DropDownItemState extends State<DropDownItem> {
     return InkWell(
       key: key,
       child: Container(
-        padding: EdgeInsets.only(top: height),
-        child: widget.builder(context, widget.value)
+          padding: EdgeInsets.only(top: height),
+          child: widget.builder(context, widget.value)
       ),
       onTap: widget.onPressed,
     );
+  }
+
+  @override
+  void dispose() {
+    // _controller.dispose();
+    super.dispose();
   }
 }
