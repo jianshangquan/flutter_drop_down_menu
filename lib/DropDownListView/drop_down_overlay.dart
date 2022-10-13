@@ -65,7 +65,9 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
           _animationController.addListener(() {
             debugPrint("listening, value ${_animation.value}");
             setState(() {
-              containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
+              if(containerHeight == 0){
+                containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
+              }
             });
             debugPrint('size ${(columnKey.currentContext?.findRenderObject() as RenderBox).size}');
             debugPrint('size ${columnKey.currentContext?.size}');

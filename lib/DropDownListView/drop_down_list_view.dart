@@ -202,26 +202,24 @@ class _DropDownListViewState extends State<DropDownListView>
       OverlayState overlayState = Overlay.of(context)!;
       _findDropDownPosition();
       _floatingDropDownOverlayEntry = _createFloatingDropDown();
-      Overlay.of(context)?.insert(_floatingDropDownOverlayEntry!);
+      overlayState.insert(_floatingDropDownOverlayEntry!);
       // _animationController.addListener(() {
       //   overlayState.setState(() {});
       //   if (widget.onWidgetTransition != null)
       //     widget.onWidgetTransition!(_animationController.value);
       // });
-      // await _animationController.forward();
-      // _isExpanded = true;
-      // if (widget.onMenuOpen != null) widget.onMenuOpen!();
+      _isExpanded = true;
+      if (widget.onMenuOpen != null) widget.onMenuOpen!();
     }
   }
 
   _closeMenu() async {
-    // if (_isExpanded) {
-      // await _animationController.reverse();
+    if (_isExpanded) {
       _floatingDropDownOverlayEntry!.remove();
       debugPrint('removed');
-      // _isExpanded = false;
-      // if (widget.onMenuClose != null) widget.onMenuClose!();
-    // }
+      _isExpanded = false;
+      if (widget.onMenuClose != null) widget.onMenuClose!();
+    }
   }
 
   _onPress(String value, int index) {
