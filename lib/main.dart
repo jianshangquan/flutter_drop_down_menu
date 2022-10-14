@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:menu_items/DropDownListView/drop_down_list_position.dart';
 import 'package:menu_items/DropDownListView/drop_down_list_view.dart';
 
 void main() {
@@ -33,10 +32,8 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   TextField(),
                   DropDownListView(
-                    height: 200,
                     defaultItemIndex: 1,
-                    position: DropdownPosition.top,
-                    items: [1,2,3,4,5,6,7].map<String>((i) => 'value $i').toList(),
+                    items: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map<String>((i) => 'value $i').toList(),
                     dropdownItemBuilder: (context, String value){
                       return Container(
                           width: double.infinity,

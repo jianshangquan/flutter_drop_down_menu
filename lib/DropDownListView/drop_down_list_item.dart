@@ -22,7 +22,7 @@ class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMix
   // final GlobalKey key = GlobalKey();
   // final double height = Random().nextDouble() * 20;
   late final AnimationController _controller = AnimationController(
-    duration: Duration(milliseconds: 150 * widget.index),
+    duration: Duration(milliseconds: 100 * widget.index),
     vsync: this,
   );
   late final Animation<double> _animation = CurvedAnimation(
@@ -35,7 +35,7 @@ class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMix
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // getSizeAndPosition();
-      Future.delayed(Duration(milliseconds: 32 * widget.index), () {
+      Future.delayed(Duration(milliseconds: 50 * widget.index), () {
         _controller.forward();
       });
     });

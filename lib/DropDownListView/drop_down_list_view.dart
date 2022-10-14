@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:menu_items/DropDownListView/drop_down_overlay.dart';
 
 import 'drop_down_list_item.dart';
-import 'drop_down_list_position.dart';
 import 'package:collection/collection.dart';
 
 typedef MenuItemBuilder = Widget Function(String data, int index);
@@ -18,13 +17,10 @@ class DropDownListView extends StatefulWidget {
   DropDownListView({
     Key? key,
     this.menuItemBuilder,
-    this.height = 300,
-    this.itemHeight = 30,
     this.gaps = 10,
     required this.onValueChanged,
     required this.items,
     this.curve = Curves.easeInOutCubic,
-    this.position = DropdownPosition.bottom,
     this.physics,
     this.duration = 250,
     this.elevation = 5,
@@ -37,8 +33,6 @@ class DropDownListView extends StatefulWidget {
     required this.dropdownItemBuilder,
   }) : super(key: key);
 
-  double height;
-  double itemHeight;
   double gaps;
   double elevation;
   MenuItemBuilder? menuItemBuilder;
@@ -49,7 +43,6 @@ class DropDownListView extends StatefulWidget {
   List<String> items;
   String? hint;
   ScrollPhysics? physics;
-  DropdownPosition position;
   OnWidgetTransition? onWidgetTransition;
   int defaultItemIndex;
   IconData iconData;
@@ -71,7 +64,8 @@ class _DropDownListViewState extends State<DropDownListView>
   final LayerLink _layerLink = LayerLink();
 
   OverlayEntry? _floatingDropDownOverlayEntry;
-  double _x = 0, _y = 0, _height = 0, _width = 0;
+  Offset btnOffset = Offset.zero;
+  Size btnDimension = Size.zero;
   bool _isExpanded = false;
   String selectedValue = 'Selected';
 
@@ -80,12 +74,7 @@ class _DropDownListViewState extends State<DropDownListView>
     super.initState();
     assert(widget.items.length > widget.defaultItemIndex,
         "Default Item Index must not larger then total items");
-    _valueNotifier =
-        ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
-    // _animationController = AnimationController(
-    //     vsync: this, duration: Duration(milliseconds: widget.duration));
-    // _animation = Tween<double>(begin: 0, end: 1).animate(
-    //     CurvedAnimation(parent: _animationController, curve: widget.curve));
+    _valueNotifier = ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
   }
 
   @override
@@ -116,60 +105,54 @@ class _DropDownListViewState extends State<DropDownListView>
 
   OverlayEntry _createFloatingDropDown() {
     Size size = MediaQuery.of(context).size;
-    double floatingTop = 0;
-    double floatingLeft = 0;
-    switch (widget.position) {
-      case DropdownPosition.bottom:
-        {
-          floatingTop = _height + widget.gaps;
-        }
-        break;
-      case DropdownPosition.top:
-        {
-          floatingTop = -widget.height - widget.gaps;
-        }
-        break;
-      case DropdownPosition.rightTop:
-        {
-          floatingTop = -widget.height - widget.gaps + _height;
-          floatingLeft = _width;
-        }
-        break;
-      case DropdownPosition.rightBottom:
-        {
-          floatingTop = 0;
-          floatingLeft = _width + widget.gaps;
-        }
-        break;
-      case DropdownPosition.leftTop:
-        {
-          floatingTop = -widget.height - widget.gaps + _height;
-          floatingLeft = -_width - widget.gaps;
-        }
-        break;
-      case DropdownPosition.leftBottom:
-        {
-          floatingTop = 0;
-          floatingLeft = -_width - widget.gaps;
-        }
-        break;
-      case DropdownPosition.automatic:
-        // TODO: Handle this case.
-        break;
-    }
+    // double floatingTop = 0;
+    // double floatingLeft = 0;
+    // switch (widget.position) {
+    //   case DropdownPosition.bottom:
+    //     {
+    //       floatingTop = btnDimension.height + widget.gaps;
+    //     }
+    //     break;
+    //   case DropdownPosition.top:
+    //     {
+    //       floatingTop = -widget.gaps;
+    //     }
+    //     break;
+    //   case DropdownPosition.rightTop:
+    //     {
+    //       floatingTop = widget.gaps + btnDimension.height;
+    //       floatingLeft = btnDimension.width;
+    //     }
+    //     break;
+    //   case DropdownPosition.rightBottom:
+    //     {
+    //       floatingTop = 0;
+    //       floatingLeft = btnDimension.width + widget.gaps;
+    //     }
+    //     break;
+    //   case DropdownPosition.leftTop:
+    //     {
+    //       floatingTop = widget.gaps + btnDimension.height;
+    //       floatingLeft = -btnDimension.width - widget.gaps;
+    //     }
+    //     break;
+    //   case DropdownPosition.leftBottom:
+    //     {
+    //       floatingTop = 0;
+    //       floatingLeft = -btnDimension.width - widget.gaps;
+    //     }
+    //     break;
+    //   case DropdownPosition.automatic:
+    //     // TODO: Handle this case.
+    //     break;
+    // }
     return OverlayEntry(
       builder: (context) {
         return DropDownOverlay(
-          x: _x,
-          y: _y,
-          floatingLeft: floatingLeft,
-          floatingTop: floatingTop,
-          width: _width,
-          height: _height,
-          containerHeight: widget.height,
-          size: size,
+          btnOffset: btnOffset,
+          btnDimension: btnDimension,
+          constraintSize: size,
           layerLink: _layerLink,
-          position: widget.position,
           physics: widget.physics ?? const ClampingScrollPhysics(),
           elevation: widget.elevation,
           gaps: widget.gaps,
@@ -185,12 +168,9 @@ class _DropDownListViewState extends State<DropDownListView>
   _findDropDownPosition() {
     RenderBox renderBox =
         _mainWidgetKey.currentContext!.findRenderObject() as RenderBox;
-    _height = renderBox.size.height;
-    _width = renderBox.size.width;
-    Offset offset = renderBox.localToGlobal(Offset.zero);
-    _x = offset.dx;
-    _y = offset.dy;
-    // debugPrint("x: $_x, y: $_y, height: $_height, width: $_width");
+    btnDimension = renderBox.size;
+    btnOffset = renderBox.localToGlobal(Offset.zero);
+    // debugPrint("x: $_x, y: $_y, height: $btnDimension.height, width: $btnDimension.width");
   }
 
   _openMenu() async {
@@ -203,11 +183,6 @@ class _DropDownListViewState extends State<DropDownListView>
       _findDropDownPosition();
       _floatingDropDownOverlayEntry = _createFloatingDropDown();
       overlayState.insert(_floatingDropDownOverlayEntry!);
-      // _animationController.addListener(() {
-      //   overlayState.setState(() {});
-      //   if (widget.onWidgetTransition != null)
-      //     widget.onWidgetTransition!(_animationController.value);
-      // });
       _isExpanded = true;
       if (widget.onMenuOpen != null) widget.onMenuOpen!();
     }
@@ -230,10 +205,8 @@ class _DropDownListViewState extends State<DropDownListView>
 
   @override
   void dispose() async {
-    // await _closeMenu();
     super.dispose();
     _valueNotifier.dispose();
-    // _animationController.dispose();
     if (_floatingDropDownOverlayEntry != null)
       _floatingDropDownOverlayEntry!.dispose();
   }
