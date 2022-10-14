@@ -25,7 +25,7 @@ class _HomeViewState extends State<HomeView> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              height: 2000,
+              height: 1500,
               alignment: Alignment.center,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -34,9 +34,9 @@ class _HomeViewState extends State<HomeView> {
                   TextField(),
                   DropDownListView(
                     height: 200,
-                    defaultItemIndex: 4,
+                    defaultItemIndex: 1,
                     position: DropdownPosition.top,
-                    items: const ["value1", 'value2', 'value3', 'value4', 'value5', 'value6', 'value7value7value7value7value7value7value7value7value7value7value7'],
+                    items: const ["value1", 'value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6', 'value7value7value7value7value7value7value7value7value7value7value7'],
                     dropdownItemBuilder: (context, String value){
                       return Container(
                           width: double.infinity,

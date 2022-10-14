@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'drop_down_list_view.dart';
 
 
+typedef OnChildRendered = void Function(Size size);
+
 class DropDownItem extends StatefulWidget {
   String value;
   VoidCallback? onPressed;
   DropdownItemWidgetBuilder builder;
+  OnChildRendered onChildRendered;
   int index;
 
-  DropDownItem({Key? key, required this.value, required this.onPressed, required this.builder, required this.index}) : super(key: key);
+  DropDownItem({Key? key, required this.value, required this.onPressed, required this.builder, required this.index,
+  required this.onChildRendered}) : super(key: key);
 
   @override
   State<DropDownItem> createState() => _DropDownItemState();
@@ -46,6 +50,7 @@ class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMix
   getSizeAndPosition() {
     RenderBox? item = key.currentContext?.findRenderObject() as RenderBox?;
     debugPrint("Size : ${item?.size.width} ${item?.size.height}");
+    widget.onChildRendered(item!.size);
     setState(() {});
   }
 

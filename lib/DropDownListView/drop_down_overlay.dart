@@ -92,39 +92,37 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
   double calculateTop(double animateValue){
     double top = 0;
 
+    if(containerHeight > widget.size.height){
+      return (widget.y + widget.gaps) - (widget.y * animateValue);
+    }
+
     if(widget.y - containerHeight < 0){
-      return widget.y + widget.height;
+      return (widget.y + widget.height) * animateValue;
     }
 
-    if(widget.y + containerHeight > widget.size.height){
-      return widget.y - containerHeight;
+    if(widget.y + widget.height + containerHeight > widget.size.height){
+      return (widget.y - containerHeight) * animateValue;
     }
 
-    // if(containerHeight > widget.y) {
-    //   top = widget.y - (widget.y * animateValue);
-    // }
-    //
-    // top = widget.y - (containerHeight * animateValue / 2);
-    //
-    // if(top + containerHeight > widget.size.height){
-    //   top = widget.y - (containerHeight * animateValue);
-    // }
-    //
-    // if(top < 0){
-    //   top = widget.y + widget.height;
-    // }
-
-    return top;
+    return widget.y - (containerHeight * animateValue / 2);
   }
 
   double calculateHeight(double animateValue){
-    double height = 0;
-    if(containerHeight > widget.y) {
-      height = widget.size.height * animateValue;
+
+    if(containerHeight > widget.size.height){
+      return (widget.size.height - widget.gaps * 2) * animateValue;
     }
 
-    height = containerHeight * animateValue;
-    return height;
+    if(containerHeight > widget.y) {
+      return widget.size.height * animateValue;
+    }
+
+    return containerHeight * animateValue;
+  }
+
+
+  void onChildSizeRendered(Size size){
+    debugPrint("Size $size");
   }
 
 
@@ -178,6 +176,7 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
                         return DropDownItem(
                           value: item,
                           index: index,
+                          onChildRendered: onChildSizeRendered,
                           builder: (context, label) {
                             return widget.dropdownItemBuilder(
                               context,
