@@ -36,7 +36,7 @@ class _HomeViewState extends State<HomeView> {
                     height: 200,
                     defaultItemIndex: 1,
                     position: DropdownPosition.top,
-                    items: const ["value1", 'value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6','value5', 'value6', 'value7value7value7value7value7value7value7value7value7value7value7'],
+                    items: [1,2,3,4,5,6,7].map<String>((i) => 'value $i').toList(),
                     dropdownItemBuilder: (context, String value){
                       return Container(
                           width: double.infinity,

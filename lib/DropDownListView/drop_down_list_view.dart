@@ -190,7 +190,7 @@ class _DropDownListViewState extends State<DropDownListView>
     Offset offset = renderBox.localToGlobal(Offset.zero);
     _x = offset.dx;
     _y = offset.dy;
-    debugPrint("x: $_x, y: $_y, height: $_height, width: $_width");
+    // debugPrint("x: $_x, y: $_y, height: $_height, width: $_width");
   }
 
   _openMenu() async {

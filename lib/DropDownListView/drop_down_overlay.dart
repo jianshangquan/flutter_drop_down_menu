@@ -54,23 +54,26 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
     super.initState();
     debugPrint("init");
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2000));
+        vsync: this, duration: Duration(milliseconds: 200));
     _animation = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.linear));
-    debugPrint("animation : ${_animation.value}");
+        CurvedAnimation(parent: _animationController, curve: Curves.ease));
+    // debugPrint("animation : ${_animation.value}");
 
     WidgetsBinding.instance
         .addPostFrameCallback((_) {
-          debugPrint("forward");
+          // debugPrint("forward");
           _animationController.addListener(() {
-            debugPrint("listening, value ${_animation.value}");
+            // debugPrint("listening, value ${_animation.value}");
             setState(() {
               if(containerHeight == 0){
                 containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
+                _animationController.duration = Duration(milliseconds: (containerHeight * 0.5).toInt());
+                _animationController.stop();
+                _animationController.forward();
               }
             });
             // debugPrint('size ${(columnKey.currentContext?.findRenderObject() as RenderBox).size}');
-            debugPrint('size ${columnKey.currentContext?.size}');
+            // debugPrint('size ${columnKey.currentContext?.size}');
           });
           _animationController.forward();
     });
@@ -90,39 +93,72 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
 
 
   double calculateTop(double animateValue){
-    double top = 0;
 
-    if(containerHeight > widget.size.height){
-      return (widget.y + widget.gaps) - (widget.y * animateValue);
+
+    bool topOutbounded = widget.y - containerHeight < 0;
+    bool bottomOutbounded = widget.y + widget.height + containerHeight > widget.size.height;
+    bool center = !topOutbounded && !bottomOutbounded;
+
+    debugPrint("TOP:  topOutBounded: $topOutbounded, bottomOutBounded: $bottomOutbounded, full: $center");
+    debugPrint("height: $containerHeight screenSize: ${widget.size.height}");
+
+    if(topOutbounded && !bottomOutbounded){
+      debugPrint("calculate top with 1");
+      return widget.y + widget.height;
     }
 
-    if(widget.y - containerHeight < 0){
-      return (widget.y + widget.height) * animateValue;
+    if(bottomOutbounded && !topOutbounded){
+      debugPrint("calculate top with 2");
+      return widget.y - (containerHeight * animateValue);
     }
 
-    if(widget.y + widget.height + containerHeight > widget.size.height){
-      return (widget.y - containerHeight) * animateValue;
+    if(topOutbounded && bottomOutbounded){
+      debugPrint("calculate top with 3");
+      double top = (widget.y + (widget.height / 2) - (containerHeight * animateValue)) + (containerHeight * animateValue / 2);
+      if ((widget.y + (widget.height / 2) - containerHeight) + (containerHeight / 2) + containerHeight > widget.size.height) {
+        // top = containerHeight - widget.height - (widget.height / 2) - (widget.y * animateValue);
+        top = widget.y - (widget.y * animateValue);
+      }
+      if (top < 0) top = 0;
+      debugPrint('top $top');
+      return top;
     }
 
-    return widget.y - (containerHeight * animateValue / 2);
+    debugPrint("calculate top with 4");
+    return (widget.y + (widget.height / 2) - (containerHeight * animateValue)) + (containerHeight * animateValue / 2);
   }
 
   double calculateHeight(double animateValue){
 
-    if(containerHeight > widget.size.height){
-      return (widget.size.height - widget.gaps * 2) * animateValue;
+    double height = 0;
+    bool topOutbounded = widget.y - containerHeight < 0;
+    bool bottomOutbounded = widget.y + widget.height + containerHeight > widget.size.height;
+    bool center = !topOutbounded && !bottomOutbounded;
+
+    if(topOutbounded && !bottomOutbounded){
+      debugPrint("calculate height with 1");
+      height = containerHeight * animateValue;
+      return height;
     }
 
-    if(containerHeight > widget.y) {
-      return widget.size.height * animateValue;
+    if(bottomOutbounded && !topOutbounded){
+      debugPrint("calculate height with 2");
+      height = containerHeight * animateValue;
+      return height;
     }
 
+    if(topOutbounded && bottomOutbounded){
+      debugPrint("calculate height with 3");
+      height = containerHeight;
+      if(height > widget.size.height){
+        debugPrint("over");
+        return widget.size.height * animateValue;
+      }
+      return height * animateValue;
+    }
+
+    debugPrint("calculate height with 4");
     return containerHeight * animateValue;
-  }
-
-
-  void onChildSizeRendered(Size size){
-    debugPrint("Size $size");
   }
 
 
@@ -145,9 +181,9 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
         ),
         Positioned(
           left: widget.x,
-          top: calculateTop(_animationController.value),
-          child: Opacity(
-            opacity: _animation.value,
+          top: calculateTop(_animation.value),
+          child: FadeTransition(
+            opacity: _animation,
             child: Container(
               width: widget.width,
               height: calculateHeight(_animation.value),
@@ -171,12 +207,12 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
                   child: Material(
                     color: Colors.transparent,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       key: columnKey,
                       children: widget.items.mapIndexed((index, item) {
                         return DropDownItem(
                           value: item,
                           index: index,
-                          onChildRendered: onChildSizeRendered,
                           builder: (context, label) {
                             return widget.dropdownItemBuilder(
                               context,
