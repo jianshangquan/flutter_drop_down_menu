@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:menu_items/DropDownListView/drop_down_overlay.dart';
 
-import 'drop_down_list_item.dart';
-import 'package:collection/collection.dart';
-
 typedef MenuItemBuilder = Widget Function(String data, int index);
 typedef OnValueChanged = dynamic Function(String data, int index);
 typedef OnWidgetTransition = Widget? Function(double animationValue);
-typedef DropdownButtonWidgetBuilder = Widget Function(BuildContext context, String selectedValue);
-typedef DropdownItemWidgetBuilder = Widget Function(BuildContext context, String value);
+typedef DropdownButtonWidgetBuilder = Widget Function(BuildContext context, int selectedIndex);
+typedef DropdownItemWidgetBuilder = Widget Function(BuildContext context, String value, int index, bool selected);
 
 
 class DropDownListView extends StatefulWidget {
@@ -58,9 +55,7 @@ class DropDownListView extends StatefulWidget {
 class _DropDownListViewState extends State<DropDownListView>
     with SingleTickerProviderStateMixin {
   final GlobalKey _mainWidgetKey = GlobalKey();
-  // late final AnimationController _animationController;
-  // late final Animation<double> _animation;
-  late final ValueNotifier<String> _valueNotifier;
+  late final ValueNotifier<int> _valueNotifier;
   final LayerLink _layerLink = LayerLink();
 
   OverlayEntry? _floatingDropDownOverlayEntry;
@@ -68,13 +63,15 @@ class _DropDownListViewState extends State<DropDownListView>
   Size btnDimension = Size.zero;
   bool _isExpanded = false;
   String selectedValue = 'Selected';
+  int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     assert(widget.items.length > widget.defaultItemIndex,
         "Default Item Index must not larger then total items");
-    _valueNotifier = ValueNotifier(widget.hint ?? widget.items[widget.defaultItemIndex]);
+    _valueNotifier = ValueNotifier(widget.defaultItemIndex);
+    selectedIndex = widget.defaultItemIndex;
   }
 
   @override
@@ -91,8 +88,8 @@ class _DropDownListViewState extends State<DropDownListView>
           children: [
             ValueListenableBuilder(
               valueListenable: _valueNotifier,
-              builder: (context, String value, child) {
-                return widget.dropdownButtonBuilder(context, value);
+              builder: (context, int index, child) {
+                return widget.dropdownButtonBuilder(context, index);
               },
             ),
             const SizedBox(width: 10),
@@ -105,47 +102,6 @@ class _DropDownListViewState extends State<DropDownListView>
 
   OverlayEntry _createFloatingDropDown() {
     Size size = MediaQuery.of(context).size;
-    // double floatingTop = 0;
-    // double floatingLeft = 0;
-    // switch (widget.position) {
-    //   case DropdownPosition.bottom:
-    //     {
-    //       floatingTop = btnDimension.height + widget.gaps;
-    //     }
-    //     break;
-    //   case DropdownPosition.top:
-    //     {
-    //       floatingTop = -widget.gaps;
-    //     }
-    //     break;
-    //   case DropdownPosition.rightTop:
-    //     {
-    //       floatingTop = widget.gaps + btnDimension.height;
-    //       floatingLeft = btnDimension.width;
-    //     }
-    //     break;
-    //   case DropdownPosition.rightBottom:
-    //     {
-    //       floatingTop = 0;
-    //       floatingLeft = btnDimension.width + widget.gaps;
-    //     }
-    //     break;
-    //   case DropdownPosition.leftTop:
-    //     {
-    //       floatingTop = widget.gaps + btnDimension.height;
-    //       floatingLeft = -btnDimension.width - widget.gaps;
-    //     }
-    //     break;
-    //   case DropdownPosition.leftBottom:
-    //     {
-    //       floatingTop = 0;
-    //       floatingLeft = -btnDimension.width - widget.gaps;
-    //     }
-    //     break;
-    //   case DropdownPosition.automatic:
-    //     // TODO: Handle this case.
-    //     break;
-    // }
     return OverlayEntry(
       builder: (context) {
         return DropDownOverlay(
@@ -160,6 +116,7 @@ class _DropDownListViewState extends State<DropDownListView>
           items: widget.items,
           onClose: _closeMenu,
           onValueChanged: _onPress,
+          selectedIndex: _valueNotifier.value,
         );
       },
     );
@@ -191,14 +148,13 @@ class _DropDownListViewState extends State<DropDownListView>
   _closeMenu() async {
     if (_isExpanded) {
       _floatingDropDownOverlayEntry!.remove();
-      debugPrint('removed');
       _isExpanded = false;
       if (widget.onMenuClose != null) widget.onMenuClose!();
     }
   }
 
   _onPress(String value, int index) {
-    _valueNotifier.value = value;
+    _valueNotifier.value = index;
     _closeMenu();
     widget.onValueChanged(value, index);
   }

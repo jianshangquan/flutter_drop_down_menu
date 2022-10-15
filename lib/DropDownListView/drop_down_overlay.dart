@@ -8,8 +8,9 @@ class DropDownOverlay extends StatefulWidget {
 
   final double elevation, gaps;
   final Size btnDimension;
-  final Offset btnOffset;
   final Size constraintSize;
+  final Offset btnOffset;
+  final int selectedIndex;
   final LayerLink? layerLink;
   final ScrollPhysics physics;
   final List<String> items;
@@ -21,6 +22,7 @@ class DropDownOverlay extends StatefulWidget {
     required this.btnOffset,
     required this.btnDimension,
     required this.constraintSize,
+    required this.selectedIndex,
     this.layerLink,
     this.physics = const NeverScrollableScrollPhysics(),
     required this.items,
@@ -46,18 +48,15 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    debugPrint("init");
     _animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 200));
+        vsync: this, duration: const Duration(milliseconds: 200));
     _animation = Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.ease));
     // debugPrint("animation : ${_animation.value}");
 
     WidgetsBinding.instance
         .addPostFrameCallback((_) {
-          // debugPrint("forward");
           _animationController.addListener(() {
-            // debugPrint("listening, value ${_animation.value}");
             setState(() {
               if(containerHeight == 0){
                 containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
@@ -66,8 +65,6 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
                 _animationController.forward();
               }
             });
-            // debugPrint('size ${(columnKey.currentContext?.findRenderObject() as RenderBox).size}');
-            // debugPrint('size ${columnKey.currentContext?.size}');
           });
           _animationController.forward();
     });
@@ -97,32 +94,32 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
     bool bottomOutbounded = widget.btnOffset.dy + widget.btnDimension.height + containerHeight > widget.constraintSize.height;
     bool center = !topOutbounded && !bottomOutbounded;
 
-    debugPrint("TOP:  topOutBounded: $topOutbounded, bottomOutBounded: $bottomOutbounded, full: $center");
-    debugPrint("height: $containerHeight screenSize: ${widget.constraintSize.height}");
+    // debugPrint("TOP:  topOutBounded: $topOutbounded, bottomOutBounded: $bottomOutbounded, full: $center");
+    // debugPrint("height: $containerHeight screenSize: ${widget.constraintSize.height}");
 
     if(topOutbounded && !bottomOutbounded){
-      debugPrint("calculate top with 1");
+      // debugPrint("calculate top with 1");
       return widget.btnOffset.dy + widget.btnDimension.height;
     }
 
     if(bottomOutbounded && !topOutbounded){
-      debugPrint("calculate top with 2");
+      // debugPrint("calculate top with 2");
       return widget.btnOffset.dy - (containerHeight * animateValue);
     }
 
     if(topOutbounded && bottomOutbounded){
-      debugPrint("calculate top with 3");
+      // debugPrint("calculate top with 3");
       double top = (widget.btnOffset.dy + (widget.btnDimension.height / 2) - (containerHeight * animateValue)) + (containerHeight * animateValue / 2);
       if ((widget.btnOffset.dy + (widget.btnDimension.height / 2) - containerHeight) + (containerHeight / 2) + containerHeight > widget.constraintSize.height) {
         // top = containerHeight - widget.btnDimension.height - (widget.btnDimension.height / 2) - (widget.btnOffset.dy * animateValue);
         top = widget.btnOffset.dy - (widget.btnOffset.dy * animateValue);
       }
       if (top < 0) top = 0;
-      debugPrint('top $top');
+      // debugPrint('top $top');
       return top;
     }
 
-    debugPrint("calculate top with 4");
+    // debugPrint("calculate top with 4");
     return (widget.btnOffset.dy + (widget.btnDimension.height / 2) - (containerHeight * animateValue)) + (containerHeight * animateValue / 2);
   }
 
@@ -134,28 +131,28 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
     bool center = !topOutbounded && !bottomOutbounded;
 
     if(topOutbounded && !bottomOutbounded){
-      debugPrint("calculate height with 1");
+      // debugPrint("calculate height with 1");
       height = containerHeight * animateValue;
       return height;
     }
 
     if(bottomOutbounded && !topOutbounded){
-      debugPrint("calculate height with 2");
+      // debugPrint("calculate height with 2");
       height = containerHeight * animateValue;
       return height;
     }
 
     if(topOutbounded && bottomOutbounded){
-      debugPrint("calculate height with 3");
+      // debugPrint("calculate height with 3");
       height = containerHeight;
       if(height > widget.constraintSize.height){
-        debugPrint("over");
+        // debugPrint("over");
         return widget.constraintSize.height * animateValue;
       }
       return height * animateValue;
     }
 
-    debugPrint("calculate height with 4");
+    // debugPrint("calculate height with 4");
     return containerHeight * animateValue;
   }
 
@@ -211,10 +208,13 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
                         return DropDownItem(
                           value: item,
                           index: index,
-                          builder: (context, label) {
+                          selectedIndex: widget.selectedIndex,
+                          builder: (context, label, index, isSelected) {
                             return widget.dropdownItemBuilder(
                               context,
                               label,
+                              index,
+                              isSelected
                             );
                           },
                           onPressed: () => onPressed(item, index),

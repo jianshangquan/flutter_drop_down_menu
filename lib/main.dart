@@ -15,6 +15,10 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+
+  List<int> val = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,23 +36,23 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   TextField(),
                   DropDownListView(
-                    defaultItemIndex: 1,
-                    items: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map<String>((i) => 'value $i').toList(),
-                    dropdownItemBuilder: (context, String value){
+                    defaultItemIndex: 0,
+                    items: val.map<String>((i) => 'value $i').toList(),
+                    dropdownItemBuilder: (context, String value, index, isSelected){
                       return Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                           child: Text(value, overflow: TextOverflow.ellipsis,)
                       );
                     },
-                    dropdownButtonBuilder: (context, String value){
+                    dropdownButtonBuilder: (context, int index){
                       return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          child: Text('$value', overflow: TextOverflow.ellipsis)
+                          child: Text('value ${val[index]}', overflow: TextOverflow.ellipsis)
                       );
                     },
                     onValueChanged: (value, index){
-                      print(value);
+                      print("value changed $value");
                     },
                   ),
                   TextField(),
