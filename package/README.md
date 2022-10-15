@@ -1,39 +1,33 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+### Usage
 ```dart
-const like = 'sample';
+    DropDownListView(
+        defaultItemIndex: 0,
+        items: ['item1', 'item2', 'item3'],
+        curve: Curves.ease, // opening or exit animation
+        safeArea: true, // popup will display with safearea, Default: true
+        physics: const NeverScrollableScrollPhysics() // scrollphysic for popup dropdown menu
+        elevation: 5, // elevation for popup dropdown
+        transitionPerPixel: 0.5, // popup menu duration for each pixel, in other word, control speed of popup menu depend on length
+        iconData: Icons.arrow_drop_down, // icon for dropdown menu
+        dropdownItemBuilder: (BuildContext context, dynamic value, int index, bool isSelected){
+            // value => value of specific item
+            // index => index of item
+            // isSelected => true when current index was selected
+            return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Text(value, overflow: TextOverflow.ellipsis)
+            );
+        },
+        dropdownButtonBuilder: (context, int index){ // Build dropdown button
+            // index => index give the current selected index;
+            return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text('value ${val[index]}', overflow: TextOverflow.ellipsis)
+            );
+        },
+        onValueChanged: (value, index){ // this function is optional and will called with selection changed.
+          print("value changed $value");
+        },
+    )
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.

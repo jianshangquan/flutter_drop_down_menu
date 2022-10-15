@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 
 class DropDownOverlay extends StatefulWidget {
 
-  final double elevation, gaps, transitionPerPixel;
+  final double elevation, transitionPerPixel;
   final Size btnDimension;
   final Size constraintSize;
   final Offset btnOffset;
@@ -31,7 +31,6 @@ class DropDownOverlay extends StatefulWidget {
     required this.items,
     required this.dropdownItemBuilder,
     this.elevation = 0.8,
-    this.gaps = 10,
     required this.onClose,
     this.onValueChanged,
   }) : super(key: key);

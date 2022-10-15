@@ -1,7 +1,7 @@
-name: flutter_drop_down
+name: flutter_drop_down_menu
 description: A flutter dropdown widget
 version: 0.0.1
-homepage:
+repository: https://github.com/jianshangquan/flutter_drop_down_menu
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
@@ -9,6 +9,8 @@ environment:
 
 dependencies:
   flutter:
+    sdk: flutter
+  collection:
     sdk: flutter
 
 dev_dependencies:
