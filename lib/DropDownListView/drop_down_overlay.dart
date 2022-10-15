@@ -17,12 +17,14 @@ class DropDownOverlay extends StatefulWidget {
   final DropdownItemWidgetBuilder dropdownItemBuilder;
   final VoidCallback onClose;
   final OnValueChanged? onValueChanged;
+  final bool safeArea;
 
   DropDownOverlay({Key? key,
     required this.btnOffset,
     required this.btnDimension,
     required this.constraintSize,
     required this.selectedIndex,
+    required this.safeArea,
     this.layerLink,
     this.physics = const NeverScrollableScrollPhysics(),
     required this.items,
@@ -161,7 +163,8 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
 
-    return Stack(
+
+    Widget overlay = Stack(
       children: [
         Container(
             color: Colors.transparent,
@@ -211,10 +214,10 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
                           selectedIndex: widget.selectedIndex,
                           builder: (context, label, index, isSelected) {
                             return widget.dropdownItemBuilder(
-                              context,
-                              label,
-                              index,
-                              isSelected
+                                context,
+                                label,
+                                index,
+                                isSelected
                             );
                           },
                           onPressed: () => onPressed(item, index),
@@ -229,6 +232,14 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
         ),
       ],
     );
+
+
+
+    if(widget.safeArea) {
+      return SafeArea(child: overlay);
+    }
+
+    return overlay;
   }
 
 

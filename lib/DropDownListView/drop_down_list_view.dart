@@ -15,6 +15,8 @@ class DropDownListView extends StatefulWidget {
     Key? key,
     this.menuItemBuilder,
     this.gaps = 10,
+    this.safeArea = true,
+    this.allowInteractive = false,
     required this.onValueChanged,
     required this.items,
     this.curve = Curves.easeInOutCubic,
@@ -32,6 +34,7 @@ class DropDownListView extends StatefulWidget {
 
   double gaps;
   double elevation;
+  bool safeArea, allowInteractive;
   MenuItemBuilder? menuItemBuilder;
   OnValueChanged onValueChanged;
   Curve curve;
@@ -56,7 +59,6 @@ class _DropDownListViewState extends State<DropDownListView>
     with SingleTickerProviderStateMixin {
   final GlobalKey _mainWidgetKey = GlobalKey();
   late final ValueNotifier<int> _valueNotifier;
-  final LayerLink _layerLink = LayerLink();
 
   OverlayEntry? _floatingDropDownOverlayEntry;
   Offset btnOffset = Offset.zero;
@@ -76,26 +78,23 @@ class _DropDownListViewState extends State<DropDownListView>
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: RawMaterialButton(
-        key: _mainWidgetKey,
-        onPressed: () => _isExpanded ? _closeMenu() : _openMenu(),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ValueListenableBuilder(
-              valueListenable: _valueNotifier,
-              builder: (context, int index, child) {
-                return widget.dropdownButtonBuilder(context, index);
-              },
-            ),
-            const SizedBox(width: 10),
-            Icon(widget.iconData),
-          ],
-        ),
+    return RawMaterialButton(
+      key: _mainWidgetKey,
+      onPressed: () => _isExpanded ? _closeMenu() : _openMenu(),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ValueListenableBuilder(
+            valueListenable: _valueNotifier,
+            builder: (context, int index, child) {
+              return widget.dropdownButtonBuilder(context, index);
+            },
+          ),
+          const SizedBox(width: 10),
+          Icon(widget.iconData),
+        ],
       ),
     );
   }
@@ -108,7 +107,7 @@ class _DropDownListViewState extends State<DropDownListView>
           btnOffset: btnOffset,
           btnDimension: btnDimension,
           constraintSize: size,
-          layerLink: _layerLink,
+          safeArea: widget.safeArea,
           physics: widget.physics ?? const ClampingScrollPhysics(),
           elevation: widget.elevation,
           gaps: widget.gaps,
