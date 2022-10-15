@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:menu_items/DropDownListView/drop_down_overlay.dart';
+
+import 'drop_down_overlay.dart';
 
 typedef MenuItemBuilder = Widget Function(String data, int index);
 typedef OnValueChanged = dynamic Function(String data, int index);

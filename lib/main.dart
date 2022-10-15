@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:menu_items/DropDownListView/drop_down_list_view.dart';
+import 'package:flutter_drop_down/DropDownListView/drop_down_list_view.dart';
 
 void main() {
   runApp(const HomeView());
