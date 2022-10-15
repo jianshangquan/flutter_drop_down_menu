@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 
 class DropDownOverlay extends StatefulWidget {
 
-  final double elevation, gaps;
+  final double elevation, gaps, transitionPerPixel;
   final Size btnDimension;
   final Size constraintSize;
   final Offset btnOffset;
@@ -25,6 +25,7 @@ class DropDownOverlay extends StatefulWidget {
     required this.constraintSize,
     required this.selectedIndex,
     required this.safeArea,
+    this.transitionPerPixel = 0.5,
     this.curve = Curves.ease,
     this.physics = const NeverScrollableScrollPhysics(),
     required this.items,
@@ -62,7 +63,7 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
             setState(() {
               if(containerHeight == 0){
                 containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
-                _animationController.duration = Duration(milliseconds: (containerHeight * 0.5).toInt());
+                _animationController.duration = Duration(milliseconds: (containerHeight * widget.transitionPerPixel).toInt());
                 _animationController.stop();
                 _animationController.forward();
               }

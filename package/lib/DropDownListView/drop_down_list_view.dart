@@ -25,13 +25,14 @@ class DropDownListView extends StatefulWidget {
     this.selectedValue,
     this.defaultItemIndex = 0,
     this.hint,
+    this.transitionPerPixel = 0.5,
     this.iconData = Icons.arrow_drop_down,
     required this.dropdownButtonBuilder,
     required this.dropdownItemBuilder,
   }) : super(key: key);
 
   double gaps;
-  double elevation;
+  double elevation, transitionPerPixel;
   bool safeArea;
   MenuItemBuilder? menuItemBuilder;
   OnValueChanged onValueChanged;
@@ -101,6 +102,7 @@ class _DropDownListViewState extends State<DropDownListView>
     return OverlayEntry(
       builder: (context) {
         return DropDownOverlay(
+          transitionPerPixel: widget.transitionPerPixel,
           btnOffset: btnOffset,
           btnDimension: btnDimension,
           constraintSize: size,
