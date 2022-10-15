@@ -59,7 +59,6 @@ class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMix
     return FadeTransition(
       opacity: _animation,
       child: InkWell(
-        // key: key,
         child: widget.builder(context, widget.value, widget.index, widget.index == widget.selectedIndex),
         onTap: widget.onPressed,
       ),
