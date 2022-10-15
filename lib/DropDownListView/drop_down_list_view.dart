@@ -14,17 +14,14 @@ class DropDownListView extends StatefulWidget {
   DropDownListView({
     Key? key,
     this.menuItemBuilder,
-    this.gaps = 10,
+    this.gaps = 100,
     this.safeArea = true,
-    this.allowInteractive = false,
     required this.onValueChanged,
     required this.items,
-    this.curve = Curves.easeInOutCubic,
-    this.physics,
-    this.duration = 250,
+    this.curve = Curves.ease,
+    this.physics = const NeverScrollableScrollPhysics(),
     this.elevation = 5,
     this.selectedValue,
-    this.onWidgetTransition,
     this.defaultItemIndex = 0,
     this.hint,
     this.iconData = Icons.arrow_drop_down,
@@ -34,15 +31,14 @@ class DropDownListView extends StatefulWidget {
 
   double gaps;
   double elevation;
-  bool safeArea, allowInteractive;
+  bool safeArea;
   MenuItemBuilder? menuItemBuilder;
   OnValueChanged onValueChanged;
   Curve curve;
-  int duration;
   String? selectedValue;
   List<String> items;
   String? hint;
-  ScrollPhysics? physics;
+  ScrollPhysics physics;
   OnWidgetTransition? onWidgetTransition;
   int defaultItemIndex;
   IconData iconData;
@@ -108,7 +104,7 @@ class _DropDownListViewState extends State<DropDownListView>
           btnDimension: btnDimension,
           constraintSize: size,
           safeArea: widget.safeArea,
-          physics: widget.physics ?? const ClampingScrollPhysics(),
+          physics: widget.physics,
           elevation: widget.elevation,
           gaps: widget.gaps,
           dropdownItemBuilder: widget.dropdownItemBuilder,

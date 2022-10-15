@@ -11,13 +11,13 @@ class DropDownOverlay extends StatefulWidget {
   final Size constraintSize;
   final Offset btnOffset;
   final int selectedIndex;
-  final LayerLink? layerLink;
   final ScrollPhysics physics;
   final List<String> items;
   final DropdownItemWidgetBuilder dropdownItemBuilder;
   final VoidCallback onClose;
   final OnValueChanged? onValueChanged;
   final bool safeArea;
+  final Curve curve;
 
   DropDownOverlay({Key? key,
     required this.btnOffset,
@@ -25,7 +25,7 @@ class DropDownOverlay extends StatefulWidget {
     required this.constraintSize,
     required this.selectedIndex,
     required this.safeArea,
-    this.layerLink,
+    this.curve = Curves.ease,
     this.physics = const NeverScrollableScrollPhysics(),
     required this.items,
     required this.dropdownItemBuilder,
@@ -53,7 +53,7 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 200));
     _animation = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.ease));
+        CurvedAnimation(parent: _animationController, curve: widget.curve));
     // debugPrint("animation : ${_animation.value}");
 
     WidgetsBinding.instance

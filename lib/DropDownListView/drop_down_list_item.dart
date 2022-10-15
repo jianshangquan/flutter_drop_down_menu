@@ -6,13 +6,15 @@ import 'drop_down_list_view.dart';
 
 
 class DropDownItem extends StatefulWidget {
-  String value;
-  VoidCallback? onPressed;
-  DropdownItemWidgetBuilder builder;
-  int index, selectedIndex;
+  final String value;
+  final VoidCallback? onPressed;
+  final DropdownItemWidgetBuilder builder;
+  final int index, selectedIndex;
+  final Curve curve;
 
   DropDownItem({
     Key? key,
+    this.curve = Curves.ease,
     required this.value,
     required this.onPressed,
     required this.builder,
@@ -32,7 +34,7 @@ class _DropDownItemState extends State<DropDownItem> with TickerProviderStateMix
   );
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
-    curve: Curves.ease,
+    curve: widget.curve,
   );
 
   @override
