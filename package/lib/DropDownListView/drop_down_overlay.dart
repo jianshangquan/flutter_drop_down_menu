@@ -62,7 +62,7 @@ class _DropDownOverlayState extends State<DropDownOverlay> with SingleTickerProv
             setState(() {
               if(containerHeight == 0){
                 containerHeight = (columnKey.currentContext?.findRenderObject() as RenderBox).size.height;
-                _animationController.duration = Duration(milliseconds: (containerHeight * 0.8).toInt());
+                _animationController.duration = Duration(milliseconds: (containerHeight * 0.5).toInt());
                 _animationController.stop();
                 _animationController.forward();
               }
