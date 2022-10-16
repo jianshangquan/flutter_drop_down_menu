@@ -2,7 +2,7 @@ name: flutter_drop_down_menu
 authors:
   - '简尚全'
 description: A flutter dropdown widget
-version: 0.0.2
+version: 0.1.0
 repository: https://github.com/jianshangquan/flutter_drop_down_menu
 
 environment:
