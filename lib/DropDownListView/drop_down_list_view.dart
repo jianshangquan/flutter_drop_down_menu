@@ -97,9 +97,8 @@ class _DropDownListViewState extends State<DropDownListView>
       builder: (context) {
         return DropDownOverlay(
           transitionPerPixel: widget.transitionPerPixel,
-          btnOffset: btnOffset,
-          btnDimension: btnDimension,
-          constraintSize: size,
+          getBtnOffsetDimension: _getDropDownPosition,
+          getConstraint: _getConstraintSize,
           safeArea: widget.safeArea,
           physics: widget.physics,
           elevation: widget.elevation,
@@ -113,12 +112,19 @@ class _DropDownListViewState extends State<DropDownListView>
     );
   }
 
-  _findDropDownPosition() {
-    RenderBox renderBox =
-        _mainWidgetKey.currentContext!.findRenderObject() as RenderBox;
+  Map<String, dynamic> _getDropDownPosition() {
+    RenderBox renderBox = _mainWidgetKey.currentContext!.findRenderObject() as RenderBox;
     btnDimension = renderBox.size;
     btnOffset = renderBox.localToGlobal(Offset.zero);
-    // debugPrint("x: $_x, y: $_y, height: $btnDimension.height, width: $btnDimension.width");
+
+    return {
+      'size': btnDimension,
+      'offset': btnOffset
+    };
+  }
+
+  Size _getConstraintSize(){
+    return MediaQuery.of(context).size;
   }
 
   _openMenu() async {
@@ -128,7 +134,7 @@ class _DropDownListViewState extends State<DropDownListView>
         currentFocus.unfocus();
       }
       OverlayState overlayState = Overlay.of(context)!;
-      _findDropDownPosition();
+      _getDropDownPosition();
       _floatingDropDownOverlayEntry = _createFloatingDropDown();
       overlayState.insert(_floatingDropDownOverlayEntry!);
       _isExpanded = true;
